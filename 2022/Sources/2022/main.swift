@@ -9,7 +9,7 @@ import Foundation
 
 let input = puzzleInput
 var days: [Day] = [
-	Day1(input: input)
+	Day1()
 ]
 
 for (dayNumber, day) in days.enumerated() {
