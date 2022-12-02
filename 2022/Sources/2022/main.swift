@@ -1,15 +1,8 @@
-//
-//  File.swift
-//  
-//
-//  Created by Pim on 02/12/2022.
-//
-
 import Foundation
 
-let input = puzzleInput
 var days: [Day] = [
-	Day1()
+	Day1(),
+	Day2()
 ]
 
 for (dayNumber, day) in days.enumerated() {
