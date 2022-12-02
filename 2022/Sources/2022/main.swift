@@ -13,7 +13,7 @@ var days: [Day] = [
 ]
 
 for (dayNumber, day) in days.enumerated() {
-	print("Day \(dayNumber)")
-	print("Part one: \(day.partOne())")
-	print("Part two: \(day.partTwo())")
+	print("⭐️ Day \(dayNumber + 1)")
+	print("- Part one: \(day.partOne())")
+	print("- Part two: \(day.partTwo())")
 }
