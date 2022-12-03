@@ -10,6 +10,12 @@ fileprivate extension Collection where Index: BinaryInteger, Index.Stride: Binar
 	}
 }
 
+fileprivate extension Collection where Element: BinaryInteger {
+	func sum() -> Element {
+		reduce(0, +)
+	}
+}
+
 fileprivate extension Collection where Element: Sequence {
 	func mapToArray() -> [Array<Element.Element>] {
 		map(Array.init(_:))
@@ -52,7 +58,7 @@ struct Day3: Day {
 			}
 			.compactMap(sharedCharacter(inSets:))
 			.map(priority(ofCharacter:))
-			.reduce(0, +)
+			.sum()
 		
 		return String(totalCount)
 	}
@@ -68,7 +74,7 @@ struct Day3: Day {
 			}
 			.compactMap(sharedCharacter(inSets:))
 			.map(priority(ofCharacter:))
-			.reduce(0, +)
+			.sum()
 		
 		return String(totalCount)
 	}
