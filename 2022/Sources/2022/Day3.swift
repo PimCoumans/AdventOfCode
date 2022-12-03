@@ -37,13 +37,6 @@ struct Day3: Day {
 	static let alphabet = "abcdefghijklmnopqrstuvwxyz"
 	static let priorities: [Character] = Array([alphabet, alphabet.uppercased()].joined())
 	
-	func sharedCharacter(inSets setCollection: [Set<Character>]) -> Character? {
-		setCollection
-			.reduce(Set()) { partialResult, characters in
-				partialResult.isEmpty ? characters : partialResult.intersection(characters)
-			}.first
-	}
-	
 	func priority(ofCharacter character: Character) -> Int {
 		Day3.priorities.firstIndex(of: character)! + 1
 	}
