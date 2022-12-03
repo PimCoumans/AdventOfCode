@@ -36,9 +36,3 @@ struct Day1: Day {
 		return String(total)
 	}
 }
-
-extension Day1 {
-	static var input: String { """
-<-- PASTE DAY 1 PUZZLE INPUT FROM ADVENTOFCODE.COM HERE -->
-"""}
-}

@@ -187,11 +187,3 @@ extension Day2.Move: ScoreProviding {
 		}
 	}
 }
-
-// MARK: - Input string
-extension Day2 {
-	static var input: String { """
-<-- PASTE DAY 2 PUZZLE INPUT FROM ADVENTOFCODE.COM HERE -->
-"""
-	}
-}
