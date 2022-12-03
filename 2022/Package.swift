@@ -9,13 +9,15 @@ let package = Package(
 		.executable(name: "2022", targets: ["2022"])
     ],
     dependencies: [
-		// None... yet
+		.package(url: "https://github.com/apple/swift-algorithms", from: "1.0.0")
     ],
     targets: [
 		.executableTarget(
 			name: "2022",
-			dependencies: [],
-			swiftSettings: [.unsafeFlags(["-O"])]
+			dependencies: [
+				.product(name: "Algorithms", package: "swift-algorithms")
+			],
+			swiftSettings: [/*.unsafeFlags(["-O"])*/]
 		),
 		.testTarget(name: "2022Tests", dependencies: ["2022"])
     ]

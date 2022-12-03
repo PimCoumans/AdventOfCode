@@ -1,20 +1,84 @@
 import Foundation
+import Algorithms
+
+fileprivate extension Collection where Index: BinaryInteger, Index.Stride: BinaryInteger {
+	func split(chunkCount: Int) -> [SubSequence] {
+		split(chunkSize: count / chunkCount)
+	}
+	func split(chunkSize size: Int) -> [SubSequence] {
+		stride(from: startIndex, to: endIndex, by: Index.Stride(size)).map { index in
+			self[index..<Swift.min(index+Index(size), endIndex)]
+		}
+	}
+}
+
+fileprivate extension Collection where Element: BinaryInteger {
+	func sum() -> Element {
+		reduce(0, +)
+	}
+}
+
+fileprivate extension Collection where Element: Sequence {
+	func mapToArray() -> [Array<Element.Element>] {
+		map(Array.init(_:))
+	}
+	
+	func mapToSet() -> [Set<Element.Element>] where Element.Element: Hashable {
+		map(Set.init(_:))
+	}
+}
 
 struct Day3: Day {
+	
+	static let alphabet = "abcdefghijklmnopqrstuvwxyz"
+	static let priorities: [Character] = Array([alphabet, alphabet.uppercased()].joined())
+	
+	func sharedCharacter(inSets setCollection: [Set<Character>]) -> Character? {
+		setCollection
+			.reduce(Set()) { partialResult, characters in
+				partialResult.isEmpty ? characters : partialResult.intersection(characters)
+			}.first
+	}
+	
+	func priority(ofCharacter character: Character) -> Int {
+		Day3.priorities.firstIndex(of: character)! + 1
+	}
 	
 	let input: String
 	init(input: String) {
 		self.input = input
 	}
 	
-	
 	func partOne() -> String {
-		return ""
+		let compartmentCount = 2
+		let totalCount: Int = input
+			.split(separator: "\n")
+			.mapToArray()
+			.map { $0
+				.split(chunkCount: compartmentCount)
+				.mapToSet()
+			}
+			.compactMap(sharedCharacter(inSets:))
+			.map(priority(ofCharacter:))
+			.sum()
+		
+		return String(totalCount)
 	}
 	
 	func partTwo() -> String {
-		return ""
+		let groupSize = 3
+		let totalCount = input
+			.split(separator: "\n")
+			.split(chunkSize: groupSize)
+			.map { group in
+				group
+					.mapToArray()
+					.mapToSet()
+			}
+			.compactMap(sharedCharacter(inSets:))
+			.map(priority(ofCharacter:))
+			.sum()
+		
+		return String(totalCount)
 	}
-	
-	
 }
