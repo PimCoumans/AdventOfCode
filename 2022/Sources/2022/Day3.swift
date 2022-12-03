@@ -2,19 +2,11 @@ import Foundation
 import Algorithms
 
 fileprivate extension Collection where Index: BinaryInteger, Index.Stride: BinaryInteger {
-	func split(chunkCount: Int) -> [SubSequence] {
-		split(chunkSize: count / chunkCount)
-	}
-	func split(chunkSize size: Int) -> [SubSequence] {
-		stride(from: startIndex, to: endIndex, by: Index.Stride(size)).map { index in
-			self[index..<Swift.min(index+Index(size), endIndex)]
+	func split(numberOfChunks chunkCount: Int) -> [SubSequence] {
+		let chunkSize: Index = Index(count / chunkCount)
+		return stride(from: startIndex, to: endIndex, by: Index.Stride(chunkSize)).map { index in
+			self[index..<Swift.min(index + chunkSize, endIndex)]
 		}
-	}
-}
-
-fileprivate extension Collection where Element: BinaryInteger {
-	func sum() -> Element {
-		reduce(0, +)
 	}
 }
 
@@ -55,12 +47,12 @@ struct Day3: Day {
 			.split(separator: "\n")
 			.mapToArray()
 			.map { $0
-				.split(chunkCount: compartmentCount)
+				.split(numberOfChunks: compartmentCount)
 				.mapToSet()
 			}
 			.compactMap(sharedCharacter(inSets:))
 			.map(priority(ofCharacter:))
-			.sum()
+			.reduce(0, +)
 		
 		return String(totalCount)
 	}
@@ -69,15 +61,14 @@ struct Day3: Day {
 		let groupSize = 3
 		let totalCount = input
 			.split(separator: "\n")
-			.split(chunkSize: groupSize)
+			.chunks(ofCount: groupSize)
 			.map { group in
 				group
-					.mapToArray()
 					.mapToSet()
 			}
 			.compactMap(sharedCharacter(inSets:))
 			.map(priority(ofCharacter:))
-			.sum()
+			.reduce(0, +)
 		
 		return String(totalCount)
 	}
