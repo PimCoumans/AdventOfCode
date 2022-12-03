@@ -10,10 +10,11 @@ struct Day1: Day {
 		
 		self.sortedTotalCalories = input
 			.components(separatedBy: "\n\n")
-			.map { $0
-				.components(separatedBy: .newlines)
-				.compactMap(Int.init(_:))
-				.reduce(0, +)
+			.map { snacksString in
+				snacksString
+					.components(separatedBy: .newlines)
+					.compactMap(Int.init(_:))
+					.reduce(0, +)
 			}
 			.sorted()
 	}
@@ -23,8 +24,8 @@ struct Day1: Day {
 	}
 	
 	func partTwo() -> String {
-		let count = 3
-		let total = sortedTotalCalories.suffix(3)
+		let total = sortedTotalCalories
+			.suffix(3)
 			.reduce(0, +)
 		return String(total)
 	}
