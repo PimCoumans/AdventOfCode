@@ -10,6 +10,12 @@ fileprivate extension Collection where Index: BinaryInteger, Index.Stride: Binar
 	}
 }
 
+fileprivate extension Collection {
+	func reduceFromFirstElement(_ reducer: (Element, Element) -> Element) -> Element {
+		dropFirst().reduce(first!, reducer)
+	}
+}
+
 fileprivate extension Collection where Element: BinaryInteger {
 	func sum() -> Element {
 		reduce(0, +)
@@ -56,7 +62,11 @@ struct Day3: Day {
 				.split(numberOfChunks: compartmentCount)
 				.mapToSet()
 			}
-			.compactMap(sharedCharacter(inSets:))
+			.compactMap { compartments in
+				compartments
+					.reduceFromFirstElement { $0.intersection($1) }
+					.first
+			}
 			.map(priority(ofCharacter:))
 			.sum()
 		
@@ -72,7 +82,11 @@ struct Day3: Day {
 				group
 					.mapToSet()
 			}
-			.compactMap(sharedCharacter(inSets:))
+			.compactMap { groupMembers in
+				groupMembers
+					.reduceFromFirstElement { $0.intersection($1) }
+					.first
+			}
 			.map(priority(ofCharacter:))
 			.sum()
 		
