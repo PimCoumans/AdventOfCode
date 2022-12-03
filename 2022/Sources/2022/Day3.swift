@@ -16,6 +16,12 @@ fileprivate extension Collection {
 	}
 }
 
+fileprivate extension Collection where Element: Collection & SetAlgebra {
+	var sharedIntersection: Element {
+		reduceFromFirstElement { $0.intersection($1) }
+	}
+}
+
 fileprivate extension Collection where Element: BinaryInteger {
 	func sum() -> Element {
 		reduce(0, +)
@@ -23,11 +29,11 @@ fileprivate extension Collection where Element: BinaryInteger {
 }
 
 fileprivate extension Collection where Element: Sequence {
-	func mapToArray() -> [Array<Element.Element>] {
+	func mappedToArrays() -> [Array<Element.Element>] {
 		map(Array.init(_:))
 	}
 	
-	func mapToSet() -> [Set<Element.Element>] where Element.Element: Hashable {
+	func mappedToSets() -> [Set<Element.Element>] where Element.Element: Hashable {
 		map(Set.init(_:))
 	}
 }
@@ -50,16 +56,12 @@ struct Day3: Day {
 		let compartmentCount = 2
 		let totalCount: Int = input
 			.split(separator: "\n")
-			.mapToArray()
+			.mappedToArrays()
 			.map { $0
 				.split(numberOfChunks: compartmentCount)
-				.mapToSet()
+				.mappedToSets()
 			}
-			.compactMap { compartments in
-				compartments
-					.reduceFromFirstElement { $0.intersection($1) }
-					.first
-			}
+			.compactMap { $0.sharedIntersection.first }
 			.map(priority(ofCharacter:))
 			.sum()
 		
@@ -71,15 +73,8 @@ struct Day3: Day {
 		let totalCount = input
 			.split(separator: "\n")
 			.chunks(ofCount: groupSize)
-			.map { group in
-				group
-					.mapToSet()
-			}
-			.compactMap { groupMembers in
-				groupMembers
-					.reduceFromFirstElement { $0.intersection($1) }
-					.first
-			}
+			.map { $0.mappedToSets() }
+			.compactMap { $0.sharedIntersection.first }
 			.map(priority(ofCharacter:))
 			.sum()
 		
