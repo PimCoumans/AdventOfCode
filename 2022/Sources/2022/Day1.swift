@@ -6,8 +6,6 @@ struct Day1: Day {
 	let sortedTotalCalories: [Int]
 	
 	init(input: String) {
-		let input = Day1.input
-		
 		self.sortedTotalCalories = input
 			.components(separatedBy: "\n\n")
 			.map { snacksString in
