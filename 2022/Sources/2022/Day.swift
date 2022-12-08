@@ -1,6 +1,8 @@
 import Foundation
 
 protocol Day {
+	associatedtype Output1
+	associatedtype Output2
 	/// Supply your input string here, preferably in an extension at the bottom of the `Day#.swift` file
 	static var input: String { get }
 	
@@ -9,9 +11,9 @@ protocol Day {
 	init(input: String)
 	
 	/// Result of part two of this day‘s challenge
-	func partOne() -> String
+	func partOne() -> Output1
 	/// Result of part two of this day‘s challenge
-	func partTwo() -> String
+	func partTwo() -> Output2
 }
 
 extension Day {

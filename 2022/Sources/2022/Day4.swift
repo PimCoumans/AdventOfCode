@@ -42,17 +42,15 @@ struct Day4: Day {
 			}
 	}
 	
-	func partOne() -> String {
+	func partOne() -> Int {
 		rangePairs
 			.filter { ClosedRange.eitherContainsOther($0, $1) }
 			.count
-			.description
 	}
 	
-	func partTwo() -> String {
+	func partTwo() -> Int {
 		rangePairs
 			.filter { $0.overlaps($1) }
 			.count
-			.description
 	}
 }

@@ -39,12 +39,12 @@ struct Day2: Day {
 			.map { ($0[0], $0[1]) }
 	}
 	
-	func partOne() -> String {
-		String(totalScore(for: roundsFromMoves))
+	func partOne() -> Int {
+		totalScore(for: roundsFromMoves)
 	}
 	
-	func partTwo() -> String {
-		String(totalScore(for: roundsFromOutcomes))
+	func partTwo() -> Int {
+		totalScore(for: roundsFromOutcomes)
 	}
 }
 

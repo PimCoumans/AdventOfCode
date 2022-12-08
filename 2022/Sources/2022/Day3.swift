@@ -52,9 +52,9 @@ struct Day3: Day {
 		self.input = input
 	}
 	
-	func partOne() -> String {
+	func partOne() -> Int {
 		let compartmentCount = 2
-		let totalCount: Int = input
+		return input
 			.split(separator: "\n")
 			.mappedToArrays()
 			.map { $0
@@ -64,20 +64,16 @@ struct Day3: Day {
 			.compactMap { $0.sharedIntersection.first }
 			.map(priority(ofCharacter:))
 			.sum()
-		
-		return String(totalCount)
 	}
 	
-	func partTwo() -> String {
+	func partTwo() -> Int {
 		let groupSize = 3
-		let totalCount = input
+		return input
 			.split(separator: "\n")
 			.chunks(ofCount: groupSize)
 			.map { $0.mappedToSets() }
 			.compactMap { $0.sharedIntersection.first }
 			.map(priority(ofCharacter:))
 			.sum()
-		
-		return String(totalCount)
 	}
 }

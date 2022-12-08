@@ -17,14 +17,13 @@ struct Day1: Day {
 			.sorted()
 	}
 	
-	func partOne() -> String {
-		String(sortedTotalCalories.last!)
+	func partOne() -> Int {
+		sortedTotalCalories.last!
 	}
 	
-	func partTwo() -> String {
-		let total = sortedTotalCalories
+	func partTwo() -> Int {
+		sortedTotalCalories
 			.suffix(3)
 			.reduce(0, +)
-		return String(total)
 	}
 }

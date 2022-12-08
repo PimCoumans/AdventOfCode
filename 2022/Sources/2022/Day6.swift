@@ -30,11 +30,11 @@ struct Day6: Day {
 			.map { $0 + 1 }
 	}
 	
-	func partOne() -> String {
-		String(indexAfterUniqueSequence(ofLength: 4, in: input)!)
+	func partOne() -> Int {
+		indexAfterUniqueSequence(ofLength: 4, in: input)!
 	}
 	
-	func partTwo() -> String {
-		String(indexAfterUniqueSequence(ofLength: 14, in: input)!)
+	func partTwo() -> Int {
+		indexAfterUniqueSequence(ofLength: 14, in: input)!
 	}
 }

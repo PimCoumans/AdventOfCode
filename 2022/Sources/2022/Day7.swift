@@ -56,22 +56,20 @@ struct Day7: Day {
 		self.directorySizes = sizes
 	}
 
-	func partOne() -> String {
+	func partOne() -> Int {
 		let maxSize = 100_000
-		let totalSize = directorySizes
+		return directorySizes
 			.filter { $0 <= maxSize }
 			.reduce(0, +)
-		return String(totalSize)
 	}
 
-	func partTwo() -> String {
+	func partTwo() -> Int {
 		let totalDiskSpace = 700_00_000
 		let diskSpaceRequired = 300_00_000
 		let diskSpaceFree = totalDiskSpace - directorySizes.max()!
 		let spaceToDelete = diskSpaceRequired - diskSpaceFree
-		let directoryToDelete = directorySizes
+		return directorySizes
 			.filter { $0 >= spaceToDelete }
 			.min()!
-		return String(directoryToDelete)
 	}
 }

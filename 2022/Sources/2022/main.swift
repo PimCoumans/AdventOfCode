@@ -1,6 +1,6 @@
 import Foundation
 
-var days: [Day] = [
+var days: [any Day] = [
 	Day1(),
 	Day2(),
 	Day3(),
