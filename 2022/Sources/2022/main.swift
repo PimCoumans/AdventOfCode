@@ -7,7 +7,8 @@ var days: [any Day] = [
 	Day4(),
 	Day5(),
 	Day6(),
-	Day7()
+	Day7(),
+	Day8()
 ]
 
 for (dayNumber, day) in days.enumerated() {
