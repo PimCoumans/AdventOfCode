@@ -28,6 +28,7 @@ struct Day10: Day {
 	}
 
 	let input: String
+	let rowLength = 40
 	let instructions: [Instruction]
 
 	init(input: String) {
@@ -37,49 +38,45 @@ struct Day10: Day {
 			.compactMap { Instruction(string: $0) }
 	}
 
-	func partOne() -> Int {
-		var cycle: Int = 0
+	typealias CycleCallback = (_ cycleIndex: Int, _ x: Int, _ pixelX: Int) -> Void
+
+	func runCycles(pre: CycleCallback? = nil, post: CycleCallback? = nil) {
+		var cycleIndex: Int = 0
 		var x: Int = 1
-		var sum: Int = 0
 		for instruction in instructions {
 			for _ in 0..<instruction.cycles {
-				cycle += 1
-				if (cycle + 20) % 40 == 0 {
-					sum += cycle * x
-				}
+				pre?(cycleIndex, x, cycleIndex % rowLength)
+				cycleIndex += 1
+				post?(cycleIndex, x, cycleIndex % rowLength)
 			}
 			if case .addX(let int) = instruction {
 				x += int
 			}
 		}
+	}
+
+	func partOne() -> Int {
+		var sum: Int = 0
+		runCycles(post: { cycle, x, pixelIndex in
+			if cycle % rowLength == 20 {
+				sum += cycle * x
+			}
+		})
 		return sum
 	}
 
 	func partTwo() -> String {
-		let rowLength = 40
-		var cycle: Int = 0
-		var x: Int = 1
-		var pixels: Set<Int> = []
-
-		for instruction in instructions {
-			for _ in 0..<instruction.cycles {
-				let xPixel = cycle % rowLength
-				if xPixel >= x - 1 && xPixel <= x + 1 {
-					pixels.insert(cycle)
-				}
-				cycle += 1
-			}
-			if case .addX(let int) = instruction {
-				x += int
-			}
-		}
 		var output = ""
-		for index in 0...pixels.max()! {
-			if index % rowLength == 0 {
+		runCycles(pre: { cycle, x, xPixel in
+			if cycle % rowLength == 0 {
 				output += "\n"
 			}
-			output += pixels.contains(index) ? "#" : "."
-		}
+			if (xPixel-1...xPixel+1) .contains(x) {
+				output += "#"
+			} else {
+				output += "."
+			}
+		})
 		return output
 	}
 }
