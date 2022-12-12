@@ -158,27 +158,26 @@ U 20
 	}
 
 	func partOne() -> Int {
-		return 0
 		var map = Map(head: Point(x: 0, y: 0))
-		print(map)
+//		print(map)
 		for vector in vectors.flatMap(\.increments) {
 			map.head += vector
-			print(map)
-			Thread.sleep(forTimeInterval: 0.05)
+//			print(map)
+//			Thread.sleep(forTimeInterval: 0.05)
 		}
-		print(map)
+//		print(map)
 		return map.storage.values.filter { $0 }.count
 	}
 
 	func partTwo() -> Int {
 		var map = Map(head: Point(x: 0, y: 0), tailLength: 9)
-		print(map)
+//		print(map)
 		for vector in vectors.flatMap(\.increments) {
 			map.head += vector
 //			print(map)
 //			Thread.sleep(forTimeInterval: 1)
 		}
-		print(map)
+//		print(map)
 		return map.storage.values.filter { $0 }.count
 	}
 }
