@@ -10,21 +10,9 @@ fileprivate extension Collection where Index: BinaryInteger, Index.Stride: Binar
 	}
 }
 
-fileprivate extension Collection {
-	func reduceFromFirstElement(_ reducer: (Element, Element) -> Element) -> Element {
-		dropFirst().reduce(first!, reducer)
-	}
-}
-
 fileprivate extension Collection where Element: Collection & SetAlgebra {
 	var sharedIntersection: Element {
 		reduceFromFirstElement { $0.intersection($1) }
-	}
-}
-
-fileprivate extension Collection where Element: BinaryInteger {
-	func sum() -> Element {
-		reduce(0, +)
 	}
 }
 

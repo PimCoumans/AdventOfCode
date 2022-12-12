@@ -1,13 +1,5 @@
 import Algorithms
 
-extension Collection where Index: BinaryInteger {
-	/// Get tuple of first two values, error when not available
-	var firstTwoValues: (first: Element, second: Element) {
-		precondition(count >= 2)
-		return (self[0], self[1])
-	}
-}
-
 extension ClosedRange where Self: Collection, Element: Equatable {
 	/// Convenience function to see if either ranges contains the other, wrapped in `if #available` with newer method used
 	static func eitherContainsOther(_ lhs: ClosedRange<Bound>, _ rhs: ClosedRange<Bound>) -> Bool {
