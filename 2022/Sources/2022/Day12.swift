@@ -42,69 +42,51 @@ struct Day12: Day {
 		self.heightMap = map
 	}
 
-	func nextSteps(from point: Point) -> [Point] {
-		[
-			Point(x: 0, y: -1),
-			Point(x: 1, y: 0),
-			Point(x: 0, y: 1),
-			Point(x: -1, y: 0)
-		]
-			.map { point + $0 }
-			.filter {
-				(0..<heightMap.width).contains($0.x) &&
-				(0..<heightMap.height).contains($0.y)
-			}
+	func nextSteps(from point: Point) -> Set<Point> {
+		Set(
+			[
+				Point(x: 0, y: -1),
+				Point(x: 1, y: 0),
+				Point(x: 0, y: 1),
+				Point(x: -1, y: 0)
+			]
+				.map { point + $0 }
+				.filter {
+					(0..<heightMap.width).contains($0.x) &&
+					(0..<heightMap.height).contains($0.y)
+				}
+		)
+	}
+
+	func numberOfSteps(from start: Point, heightRange: ClosedRange<Int>, until: (Point) -> Bool) -> Int {
+		var nextSteps = Set([start])
+		var visited = nextSteps
+		var step: Int = 0
+		while !nextSteps.isEmpty && nextSteps.first(where: until) == nil {
+			step += 1
+			nextSteps = Set(
+				nextSteps
+					.flatMap { point in
+						self.nextSteps(from: point)
+							.subtracting(visited)
+							.filter {
+								let difference = heightMap[$0]! - heightMap[point]!
+								return heightRange.contains(difference)
+							}
+					}
+			)
+			visited.formUnion(nextSteps)
+		}
+
+		return step
 	}
 
 	func partOne() -> Int {
-		var distanceMap = Map<Int>(width: heightMap.width, height: heightMap.height)
-		var nextSteps = Set([start])
-		var step: Int = 0
-		while !nextSteps.contains(end) {
-			step += 1
-			nextSteps = Set(
-				nextSteps
-					.flatMap { point in
-						self.nextSteps(from: point)
-							.filter {
-								!distanceMap.storage.keys.contains($0) // not already visited
-							}
-							.filter {
-								(heightMap[$0]! - heightMap[point]!) <= 1 // only climbing up
-							}
-					}
-			)
-			for point in nextSteps {
-				distanceMap[point] = step
-			}
-		}
-
-		return step
+		numberOfSteps(from: start, heightRange: -2...1, until: { $0 == end })
 	}
 
 	func partTwo() -> Int {
-		var distanceMap = Map<Int>(width: heightMap.width, height: heightMap.height)
-		var nextSteps = Set([end])
-		var step: Int = 0
-		while nextSteps.count > 0 && nextSteps.first(where: { heightMap[$0] == 0 }) == nil {
-			step += 1
-			nextSteps = Set(
-				nextSteps
-					.flatMap { point in
-						self.nextSteps(from: point)
-							.filter {
-								!distanceMap.storage.keys.contains($0) // not already visited
-							}
-							.filter {
-								(heightMap[$0]! - heightMap[point]!) >= -1 // only climbing down
-							}
-					}
-			)
-			for point in nextSteps {
-				distanceMap[point] = step
-			}
-		}
-		return step
+		numberOfSteps(from: end, heightRange: -1...2, until: { heightMap[$0] == 0 })
 	}
 }
 
