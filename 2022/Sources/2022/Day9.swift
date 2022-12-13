@@ -1,36 +1,7 @@
 import Foundation
 import Algorithms
 
-protocol Int2: Hashable {
-	var x: Int { get set }
-	var y: Int { get set }
-
-	init(x: Int, y: Int)
-}
-
 extension Int2 {
-	static func +(left: Self, right: any Int2) -> Self {
-		Self(x: left.x + right.x, y: left.y + right.y)
-	}
-	static func -(left: Self, right: any Int2) -> Self {
-		Self(x: left.x - right.x, y: left.y - right.y)
-	}
-	static func /(left: Self, right: any Int2) -> Self {
-		Self(x: left.x / right.x, y: left.y / right.y)
-	}
-
-	static func +=(left: inout Self, right: any Int2) {
-		left = left + right
-	}
-
-	var length: Int { max(abs.x, abs.y) }
-
-	var abs: Self {
-		Self(x: Swift.abs(x), y: Swift.abs(y))
-	}
-
-	var signum: Self { self / abs } // normalized values retaining sign
-
 	var increments: [Self] {
 		let step = Self(x: x / length, y: y / length)
 		return Array.init(repeating: step, count: length)
@@ -38,14 +9,6 @@ extension Int2 {
 }
 
 struct Day9: Day {
-
-	struct Vector: Int2 {
-		var x, y: Int
-	}
-
-	struct Point: Int2 {
-		var x, y: Int
-	}
 
 	struct Map: CustomStringConvertible {
 		var storage: [Point: Bool] = [:]
@@ -182,13 +145,13 @@ U 20
 	}
 }
 
-extension Day9.Vector {
+fileprivate extension Vector {
 	init?(character: Character, length: Int) {
 		switch character {
-		case "R": self = Day9.Vector(x: length, y: 0)
-		case "L": self = Day9.Vector(x: -length, y: 0)
-		case "U": self = Day9.Vector(x: 0, y: -length)
-		case "D": self = Day9.Vector(x: 0, y: length)
+		case "R": self = Vector(x: length, y: 0)
+		case "L": self = Vector(x: -length, y: 0)
+		case "U": self = Vector(x: 0, y: -length)
+		case "D": self = Vector(x: 0, y: length)
 		default: return nil
 		}
 	}
