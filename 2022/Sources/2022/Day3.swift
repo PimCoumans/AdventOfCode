@@ -16,16 +16,6 @@ fileprivate extension Collection where Element: Collection & SetAlgebra {
 	}
 }
 
-fileprivate extension Collection where Element: Sequence {
-	func mappedToArrays() -> [Array<Element.Element>] {
-		map(Array.init(_:))
-	}
-	
-	func mappedToSets() -> [Set<Element.Element>] where Element.Element: Hashable {
-		map(Set.init(_:))
-	}
-}
-
 struct Day3: Day {
 	
 	static let alphabet = "abcdefghijklmnopqrstuvwxyz"
