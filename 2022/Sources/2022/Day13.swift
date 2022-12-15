@@ -88,22 +88,17 @@ struct Day13: Day {
 """*/
 	}
 
-	private func parseInput() -> [(first: IntArray, second: IntArray)] {
+	private func parseInput() -> [IntArray] {
 		self.input
-			.components(separatedBy: "\n\n")
+			.lines()
+			.filter { !$0.isEmpty }
 			.map {
-				$0
-					.lines()
-					.prefix(2)
-					.map {
-						var string = String($0.dropFirst())
-						return parseArrays(outOf: &string)
-					}
-					.firstTwoValues
+				var string = String($0.dropFirst())
+				return parseArray(outOf: &string)
 			}
 	}
 
-	private func parseArrays(outOf string: inout String) -> IntArray {
+	private func parseArray(outOf string: inout String) -> IntArray {
 		var intBuffer: String = ""
 		var array: [IntArray] = []
 		while !string.isEmpty {
@@ -114,7 +109,7 @@ struct Day13: Day {
 			}
 
 			switch character {
-			case "[": array.append(parseArrays(outOf: &string))
+			case "[": array.append(parseArray(outOf: &string))
 			case "]": return .array(array)
 			case ",": continue
 			default: intBuffer.append(character)
@@ -125,12 +120,13 @@ struct Day13: Day {
 
 	func partOne() -> Int {
 		parseInput()
+			.chunks(ofCount: 2)
 			.enumerated()
-			.filter {
-				$1.first.result(comparing: $1.second) != .orderedDescending
+			.filter { index, chunk in
+				let values = chunk.firstTwoValues
+				return values.first.result(comparing: values.second) != .orderedDescending
 			}
-			.map(\.offset)
-			.map { $0 + 1 }
+			.map { $0.offset + 1 }
 			.reduce(0, +)
 	}
 
@@ -139,16 +135,13 @@ struct Day13: Day {
 			.array([.single(2)]),
 			.array([.single(6)])
 		]
-		let allPackets = parseInput()
-			.flatMap { [$0, $1] } + dividerPackets
-
-		let sorted = allPackets
+		let sortedPackets = (parseInput() + dividerPackets)
 			.sorted {
 				$0.result(comparing: $1) == .orderedAscending
 			}
 		return dividerPackets
 			.compactMap { packet in
-				sorted.firstIndex(of: packet)
+				sortedPackets.firstIndex(of: packet)
 			}
 			.map { $0 + 1}
 			.reduceFromFirstElement(*)
