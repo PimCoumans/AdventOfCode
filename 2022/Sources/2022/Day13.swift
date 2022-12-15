@@ -1,7 +1,7 @@
 import Foundation
 import Algorithms
 
-fileprivate enum IntArray: CustomStringConvertible {
+fileprivate enum IntArray: Equatable {
 	case single(Int)
 	indirect case array([IntArray])
 
@@ -11,7 +11,9 @@ fileprivate enum IntArray: CustomStringConvertible {
 		case .array(let array): return array
 		}
 	}
+}
 
+extension IntArray: CustomStringConvertible {
 	var description: String {
 		switch self {
 		case .single(let int): return int.description
@@ -133,6 +135,22 @@ struct Day13: Day {
 	}
 
 	func partTwo() -> Int {
-		0
+		let dividerPackets: [IntArray] = [
+			.array([.single(2)]),
+			.array([.single(6)])
+		]
+		let allPackets = parseInput()
+			.flatMap { [$0, $1] } + dividerPackets
+
+		let sorted = allPackets
+			.sorted {
+				$0.result(comparing: $1) == .orderedAscending
+			}
+		return dividerPackets
+			.compactMap { packet in
+				sorted.firstIndex(of: packet)
+			}
+			.map { $0 + 1}
+			.reduceFromFirstElement(*)
 	}
 }
