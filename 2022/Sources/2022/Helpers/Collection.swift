@@ -17,7 +17,7 @@ extension Collection where Element: BinaryInteger {
 	}
 }
 
-extension Collection where Element: Comparable {
+extension Collection {
 	func max<Value: Comparable>(_ keyPath: KeyPath<Element, Value>) -> Element? {
 		self.max(by: { $0[keyPath: keyPath] < $1[keyPath: keyPath] })
 	}

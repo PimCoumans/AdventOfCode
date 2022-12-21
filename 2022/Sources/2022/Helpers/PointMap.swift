@@ -24,12 +24,12 @@ extension Map: CustomStringConvertible {
 	}
 	
 	func description(offset: Point = .zero, separator: String = "", emptyTile: String = ".") -> String {
-		compactMap { point, tile in
-			guard point.x >= offset.x, point.y >= offset.y else {
-				return nil
-			}
-			return (point.x == offset.x ? "\n" : separator) + (tile.map { "\($0)" } ?? emptyTile)
-		}.joined()
+		var output = ""
+		enumerateTiles(offset: offset) { point, tile in
+			output += point.x == offset.x ? "\n" : separator
+			output += tile.map { "\($0)" } ?? emptyTile
+		}
+		return output
 	}
 }
 
@@ -78,15 +78,15 @@ extension Map: Sequence {
 }
 
 extension Map {
-	func enumeratePoints(_ enumerator: (_ point: Point) -> Void) {
-		for y in 0..<height {
-			for x in 0..<width {
+	func enumeratePoints(offset: Point = .zero, _ enumerator: (_ point: Point) -> Void) {
+		for y in offset.y..<height {
+			for x in offset.x..<width {
 				enumerator(Point(x: x, y: y))
 			}
 		}
 	}
-	func enumerateTiles(_ enumerator: (_ point: Point, _ tile: Tile?) -> Void) {
-		enumeratePoints { point in
+	func enumerateTiles(offset: Point = .zero, _ enumerator: (_ point: Point, _ tile: Tile?) -> Void) {
+		enumeratePoints(offset: offset) { point in
 			enumerator(point, storage[point])
 		}
 	}

@@ -88,6 +88,8 @@ extension Int2 {
 extension Int2 {
 	var length: Int { max(abs.x, abs.y) }
 
+	var manhattanLength: Int { abs.x + abs.y }
+
 	var abs: Self {
 		Self(x: Swift.abs(x), y: Swift.abs(y))
 	}
