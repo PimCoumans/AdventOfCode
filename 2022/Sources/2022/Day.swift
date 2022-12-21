@@ -1,10 +1,6 @@
 import Foundation
 import Algorithms
 
-
-
-
-
 protocol Day {
 	associatedtype Output1
 	associatedtype Output2
