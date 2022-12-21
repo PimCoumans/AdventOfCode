@@ -11,6 +11,11 @@ struct Map<Tile: Equatable> {
 		self.height = height
 		self.storage = [:]
 	}
+
+	func containsPoint(_ point: Point) -> Bool {
+		(0..<width).contains(point.x) &&
+		(0..<height).contains(point.y)
+	}
 }
 
 extension Map: CustomStringConvertible {
@@ -18,9 +23,12 @@ extension Map: CustomStringConvertible {
 		self.description()
 	}
 	
-	func description(separator: String = "", emptyTile: String = ".") -> String {
-		map { point, tile in
-			(point.x == 0 ? "\n" : separator) + (tile.map { "\($0)" } ?? emptyTile)
+	func description(offset: Point = .zero, separator: String = "", emptyTile: String = ".") -> String {
+		compactMap { point, tile in
+			guard point.x >= offset.x, point.y >= offset.y else {
+				return nil
+			}
+			return (point.x == offset.x ? "\n" : separator) + (tile.map { "\($0)" } ?? emptyTile)
 		}.joined()
 	}
 }
@@ -55,7 +63,7 @@ extension Map: Sequence {
 		typealias Element = (point: Point, tile: Tile?)
 		var currentPoint: Point?
 		mutating func next() -> Element? {
-			var point = (currentPoint ?? .zero) + Point(x: 1, y: 0)
+			var point = (currentPoint ?? Point(x: -1, y: 0)) + Point(x: 1, y: 0)
 			if point.x >= map.width {
 				point.y += 1
 				point.x = 0

@@ -14,6 +14,7 @@ var days: [any Day] = [
 	Day11(),
 	Day12(),
 	Day13()
+	Day14()
 ]
 
 for (dayNumber, day) in days.enumerated() {
