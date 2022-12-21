@@ -26,11 +26,11 @@ struct Day14: Day {
 	}
 	let input: String
 	init(input: String) {
-//		self.input = input
-		self.input = """
-498,4 -> 498,6 -> 496,6
-503,4 -> 502,4 -> 502,9 -> 494,9
-"""
+		self.input = input
+//		self.input = """
+//498,4 -> 498,6 -> 496,6
+//503,4 -> 502,4 -> 502,9 -> 494,9
+//"""
 	}
 
 	func parseMap(heightExtension: Int = 0) -> (offset: Point, map: Map<Tile>) {
@@ -65,9 +65,9 @@ struct Day14: Day {
 		return (offset, map)
 	}
 
-	func simulateSand(with startMap: Map<Tile>, restAtBottom: Bool = false) -> Map<Tile> {
+	func simulateSand(with startMap: Map<Tile>, offset: Point, restAtBottom: Bool = false) -> Map<Tile> {
 		var map = startMap
-		let sandStart = Point(x: 500, y: -1)
+		let sandStart = Point(x: 500, y: 0)
 		let fallSteps = [
 			Vector(x: 0, y: 1),
 			Vector(x: -1, y: 1),
@@ -93,18 +93,17 @@ struct Day14: Day {
 				let nextPosition = positions.first
 
 				guard let nextPosition else {
-					guard sandPosition.y >= 0 else {
-						// it's full!
-						noMoreMovesLeft = true
-						break
-					}
 					// No next position found, we resting
 					sandFoundRest = true
 					map[sandPosition] = .sand
+					if sandPosition == sandStart {
+						// it's full!
+						noMoreMovesLeft = true
+					}
 					break
 				}
 				guard nextPosition.y < map.height else {
-					// sand fell of bottom
+					// sand fell off bottom
 					noMoreMovesLeft = true
 					break
 				}
@@ -117,13 +116,15 @@ struct Day14: Day {
 	
 	func partOne() -> Int {
 		let (offset, startMap) = parseMap()
-		let map = simulateSand(with: startMap)
-		print(map.description(offset: offset))
-		let sand = map.map(\.tile).filter { $0 == .sand }.count
+		let map = simulateSand(with: startMap, offset: offset)
+		let sand = map.storage.values.filter { $0 == .sand }.count
 		return sand
 	}
 	
 	func partTwo() -> Int {
-		0
+		let (offset, startMap) = parseMap(heightExtension: 1)
+		let map = simulateSand(with: startMap, offset: offset, restAtBottom: true)
+		let sand = map.storage.values.filter { $0 == .sand }.count
+		return sand
 	}
 }
