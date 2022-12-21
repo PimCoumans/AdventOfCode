@@ -19,8 +19,8 @@ struct Day14: Day {
 
 		var description: String {
 			switch self {
-			case .line: return "#"
-			case .sand: return "0"
+			case .line: return "🛑"
+			case .sand: return "🌕"
 			}
 		}
 	}
@@ -65,8 +65,9 @@ struct Day14: Day {
 		return (offset, map)
 	}
 
-	func simulateSand(with startMap: Map<Tile>, offset: Point, restAtBottom: Bool = false) -> Map<Tile> {
-		var map = startMap
+	func simulateSand(restAtBottom: Bool = false) -> Map<Tile> {
+		var (offset, map) = parseMap(heightExtension: 1)
+
 		let sandStart = Point(x: 500, y: 0)
 		let fallSteps = [
 			Vector(x: 0, y: 1),
@@ -74,11 +75,12 @@ struct Day14: Day {
 			Vector(x: 1, y: 1)
 		]
 		var noMoreMovesLeft: Bool = false
-		repeat {
+		while !noMoreMovesLeft {
 			var sandFoundRest = false
 			var sandPosition: Point = sandStart
-			repeat {
+			while !sandFoundRest {
 				var positions = fallSteps
+					.lazy
 					.map { sandPosition + $0 }
 					.filter { map[$0] == nil }
 
@@ -108,23 +110,24 @@ struct Day14: Day {
 					break
 				}
 				sandPosition = nextPosition
-			} while !sandFoundRest
-		} while !noMoreMovesLeft
+			}
+		}
 
+//		print(map.description(offset: offset, emptyTile: "◼️"))
 		return map
 	}
 	
 	func partOne() -> Int {
-		let (offset, startMap) = parseMap()
-		let map = simulateSand(with: startMap, offset: offset)
-		let sand = map.storage.values.filter { $0 == .sand }.count
-		return sand
+		simulateSand()
+			.storage.values
+			.filter { $0 == .sand }
+			.count
 	}
 	
 	func partTwo() -> Int {
-		let (offset, startMap) = parseMap(heightExtension: 1)
-		let map = simulateSand(with: startMap, offset: offset, restAtBottom: true)
-		let sand = map.storage.values.filter { $0 == .sand }.count
-		return sand
+		simulateSand(restAtBottom: true)
+			.storage.values
+			.filter { $0 == .sand }
+			.count
 	}
 }
