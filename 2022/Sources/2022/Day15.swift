@@ -5,12 +5,39 @@ fileprivate struct SensorArea {
 	let beacon: Point
 	let radius: Int
 
-	var horizontalRange: ClosedRange<Int> {
-		(point.x - radius)...(point.x + radius)
+	let horizontalRange: ClosedRange<Int>
+	let verticalRange: ClosedRange<Int>
+
+	init(point: Point, beacon: Point, radius: Int) {
+		self.point = point
+		self.beacon = beacon
+		self.radius = radius
+		self.horizontalRange = (point.x - radius)...(point.x + radius)
+		self.verticalRange = (point.y - radius)...(point.y + radius)
 	}
 
-	var verticalRange: ClosedRange<Int> {
-		(point.y - radius)...(point.y + radius)
+	func rangeContains(_ other: Point) -> Bool {
+		let distance = (other - point).abs
+		if distance.x > radius || distance.y > radius {
+			return false
+		}
+		return distance.x + distance.y <= radius
+	}
+}
+
+fileprivate enum Legend: CustomStringConvertible {
+	case sensor
+	case beacon
+	case scanRange
+	case empty
+
+	var description: String {
+		switch self {
+		case .sensor: return "S"
+		case .beacon: return "B"
+		case .scanRange: return "#"
+		case .empty: return "."
+		}
 	}
 }
 
@@ -47,7 +74,6 @@ struct Day15: Day {
 						$0
 							.components(separatedBy: ",")
 							.compactMap { $0.components(separatedBy: "=").last }
-//							.map { $0.suffix(from: $0.index($0.startIndex, offsetBy: 2)) }
 							.toInts()
 							.firstTwoValues
 					}
@@ -66,8 +92,8 @@ struct Day15: Day {
 	}
 	
 	func partOne() -> Int {
+		//		let checkedRow = 10
 		let checkedRow = 2_000_000
-//		let checkedRow = 10
 
 		print("Parsing sensors")
 		let sensors = parseSensors()
@@ -75,50 +101,85 @@ struct Day15: Day {
 		print("Calculating bounds")
 		let minX: Int = sensors.min(\.horizontalRange.lowerBound)!
 		let maxX: Int = sensors.max(\.horizontalRange.upperBound)!
-		let minY: Int = sensors.min(\.verticalRange.lowerBound)!
 		let maxY: Int = sensors.max(\.verticalRange.upperBound)!
-		
 
-		var map = Map<Character>(
+		var map = Map<Legend>(
 			width: maxX + 1,
 			height: maxY + 1)
-
-		print("Filtering sensors")
 
 		let overlappingSensors = sensors
 			.filter { $0.verticalRange.contains(checkedRow) }
 
-		print("Enumerating row \(checkedRow), \(minX)...\(maxX)")
-
 		let interval = 100_000
 		for x in minX...maxX {
-			if x % interval == 0 {
-				print(String.init(repeating: ".", count: (x - minX) / interval))
-			}
 			let point = Point(x: x, y: checkedRow)
-			let sensor = overlappingSensors.first { sensor in
-				sensor.radius >= (sensor.point - point).manhattanLength
-			}
-			guard let sensor else {
+			guard let sensor = overlappingSensors
+				.filter({ $0.horizontalRange.contains(x) })
+				.first(where: { $0.rangeContains(point) }) else {
 				continue
 			}
 			if point == sensor.point {
-				map[point] = "S"
+				map[point] = .sensor
 			} else if point == sensor.beacon {
-				map[point] = "B"
+				map[point] = .beacon
 			} else {
-				map[point] = "#"
+				map[point] = .scanRange
 			}
 		}
 
 		return map.storage.keys
 			.filter { $0.y == checkedRow }
 			.compactMap { map[$0] }
-			.filter { $0 == "#" }
+			.filter { $0 == .scanRange }
 			.count
 	}
 	
 	func partTwo() -> Int {
-		0
+//		let checkRange = 0...20
+		let checkRange = 0...4_000_000
+
+		let sensors = parseSensors()
+
+		let minX: Int = sensors.min(\.horizontalRange.lowerBound)!
+		let maxX: Int = sensors.max(\.horizontalRange.upperBound)!
+		let minY: Int = sensors.min(\.verticalRange.lowerBound)!
+		let maxY: Int = sensors.max(\.verticalRange.upperBound)!
+
+		var map = Map<Legend>(
+			width: maxX + 1,
+			height: maxY + 1)
+
+		let overlappingSensors = sensors
+			.filter {
+				checkRange.overlaps($0.verticalRange) &&
+				checkRange.overlaps($0.horizontalRange)
+			}
+
+		let verticalRange = (minY...maxY).clamped(to: checkRange)
+		let horizontalRange = (minX...maxX).clamped(to: checkRange)
+
+		let interval = 500_000
+		for y in (minY...maxY).clamped(to: checkRange) {
+			var x = horizontalRange.lowerBound
+			while x <= horizontalRange.upperBound {
+				defer {
+					x += 1
+				}
+				let point = Point(x: x, y: y)
+				guard let sensor = overlappingSensors.first(where: { $0.rangeContains(point )}) else {
+					map[point] = .empty
+					continue
+				}
+
+				let distance = sensor.point - point
+				// Move x to end of scan area
+				x = (sensor.point.x + sensor.radius) - abs(distance.y)
+			}
+		}
+
+		return map.storage.keys
+			.filter { map[$0] == .empty }
+			.map { $0.x * 4_000_000 + $0.y }
+			.first!
 	}
 }
