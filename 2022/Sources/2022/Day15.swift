@@ -95,10 +95,8 @@ struct Day15: Day {
 		//		let checkedRow = 10
 		let checkedRow = 2_000_000
 
-		print("Parsing sensors")
 		let sensors = parseSensors()
 
-		print("Calculating bounds")
 		let minX: Int = sensors.min(\.horizontalRange.lowerBound)!
 		let maxX: Int = sensors.max(\.horizontalRange.upperBound)!
 		let maxY: Int = sensors.max(\.verticalRange.upperBound)!

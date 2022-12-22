@@ -1,5 +1,5 @@
 import XCTest
-@testable import _022
+/*@testable import _022
 
 class Day2Tests: XCTestCase {
 	
@@ -90,4 +90,4 @@ A Y
 B X
 C Z
 """}
-}
+}*/
