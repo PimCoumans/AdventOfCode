@@ -66,7 +66,7 @@ struct Day14: Day {
 	}
 
 	func simulateSand(restAtBottom: Bool = false) -> Map<Tile> {
-		var (offset, map) = parseMap(heightExtension: 1)
+		var (_, map) = parseMap(heightExtension: 1)
 
 		let sandStart = Point(x: 500, y: 0)
 		let fallSteps = [

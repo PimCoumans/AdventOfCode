@@ -108,7 +108,6 @@ struct Day15: Day {
 		let overlappingSensors = sensors
 			.filter { $0.verticalRange.contains(checkedRow) }
 
-		let interval = 100_000
 		for x in minX...maxX {
 			let point = Point(x: x, y: checkedRow)
 			guard let sensor = overlappingSensors
@@ -153,10 +152,9 @@ struct Day15: Day {
 				checkRange.overlaps($0.horizontalRange)
 			}
 
-		let verticalRange = (minY...maxY).clamped(to: checkRange)
+//		let verticalRange = (minY...maxY).clamped(to: checkRange)
 		let horizontalRange = (minX...maxX).clamped(to: checkRange)
 
-		let interval = 500_000
 		for y in (minY...maxY).clamped(to: checkRange) {
 			var x = horizontalRange.lowerBound
 			while x <= horizontalRange.upperBound {
