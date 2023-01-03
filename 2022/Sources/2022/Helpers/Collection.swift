@@ -9,6 +9,11 @@ extension Collection {
 		precondition(count >= 2)
 		return (self[startIndex], self[index(after: startIndex)])
 	}
+
+
+	func appending(_ element: Element) -> [Element] {
+		self + [element]
+	}
 }
 
 extension Collection where Element: BinaryInteger {
@@ -18,6 +23,11 @@ extension Collection where Element: BinaryInteger {
 }
 
 extension Collection {
+
+	public func sorted<Value: Comparable>(by keyPath: KeyPath<Element, Value>) -> [Element] {
+		sorted { $0[keyPath: keyPath] < $1[keyPath: keyPath] }
+	}
+
 	func max<Value: Comparable>(_ keyPath: KeyPath<Element, Value>) -> Element? {
 		self.max(by: { $0[keyPath: keyPath] < $1[keyPath: keyPath] })
 	}
