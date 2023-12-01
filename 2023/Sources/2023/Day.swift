@@ -5,9 +5,6 @@ protocol Day {
 	associatedtype Output1
 	associatedtype Output2
 
-	/// Supply your input string here, preferably in an separate file
-	static var input: String { get }
-
 	/// Called automatically with  input string when using an empty initializer
 	/// - Parameter input: Value of provided `static var input`
 	init(input: String)
@@ -21,6 +18,8 @@ protocol Day {
 extension Day {
 	/// Initializes `Day` with its `input`
 	init() {
-		self.init(input: Self.input)
+		let inputURL = Bundle.module.url(forResource: "\(Self.self)", withExtension: "txt")
+		let text = try! String(contentsOf: inputURL!)
+		self.init(input: text)
 	}
 }

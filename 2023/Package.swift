@@ -17,6 +17,9 @@ let package = Package(
 			dependencies: [
 				.product(name: "Algorithms", package: "swift-algorithms")
 			],
+			resources: [
+				.process("Resources/Inputs")
+			],
 			swiftSettings: [/*.unsafeFlags(["-O"])*/]
 		),
 		.testTarget(name: "2023Tests", dependencies: ["2023"])

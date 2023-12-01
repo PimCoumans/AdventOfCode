@@ -27,7 +27,8 @@ struct Day1: Day {
 
 	func partOne() -> Int {
 		input
-			.lines()
+			.linesByDroppingTrailingEmpty()
+			.filter { !$0.isEmpty }
 			.map {
 				String($0.first(where: { $0.isNumber })!) +
 				String($0.last(where: { $0.isNumber })!)
@@ -53,7 +54,7 @@ struct Day1: Day {
 
 	func partTwo() -> Int {
 		input
-			.lines()
+			.linesByDroppingTrailingEmpty()
 			.compactMap(findCombinedInteger(in:))
 			.sum()
 	}

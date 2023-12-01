@@ -1,6 +1,10 @@
 import Foundation
 
 extension StringProtocol {
+	var isNotEmpty: Bool { !isEmpty }
+}
+
+extension StringProtocol {
 
 	func lineBlocks() -> [[String]] where Self == String {
 		blocks().map { $0.lines() }
@@ -12,6 +16,10 @@ extension StringProtocol {
 
 	func lines() -> [String] {
 		components(separatedBy: .newlines)
+	}
+
+	func linesByDroppingTrailingEmpty() -> [String] {
+		lines().prefix(while: \.isNotEmpty)
 	}
 
 	func trimmedLines() -> [String] {
