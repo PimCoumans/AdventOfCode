@@ -12,31 +12,32 @@ struct Day16: Day {
 
 	let input: String
 	init(input: String) {
-		self.input = input
-//		self.input = """
-//Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
-//Valve BB has flow rate=13; tunnels lead to valves CC, AA
-//Valve CC has flow rate=2; tunnels lead to valves DD, BB
-//Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
-//Valve EE has flow rate=3; tunnels lead to valves FF, DD
-//Valve FF has flow rate=0; tunnels lead to valves EE, GG
-//Valve GG has flow rate=0; tunnels lead to valves FF, HH
-//Valve HH has flow rate=22; tunnel leads to valve GG
-//Valve II has flow rate=0; tunnels lead to valves AA, JJ
-//Valve JJ has flow rate=21; tunnel leads to valve II
-//"""
+//		self.input = input
+		self.input = """
+Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
+Valve BB has flow rate=13; tunnels lead to valves CC, AA
+Valve CC has flow rate=2; tunnels lead to valves DD, BB
+Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
+Valve EE has flow rate=3; tunnels lead to valves FF, DD
+Valve FF has flow rate=0; tunnels lead to valves EE, GG
+Valve GG has flow rate=0; tunnels lead to valves FF, HH
+Valve HH has flow rate=22; tunnel leads to valve GG
+Valve II has flow rate=0; tunnels lead to valves AA, JJ
+Valve JJ has flow rate=21; tunnel leads to valve II
+"""
 	}
 
 	private func parseInput() -> [Valve] {
 		let separatorCharacterSet: CharacterSet = .punctuationCharacters.union(.whitespaces).union(.symbols)
 		return self.input
 			.lines()
-			.map { line in
-				let words = line
-					.components(separatedBy: separatorCharacterSet)
-					.filter { !$0.isEmpty }
-				return Valve(
-					id:words[1],
+			.map { $0
+				.components(separatedBy: separatorCharacterSet)
+				.filter { !$0.isEmpty }
+			}
+			.map { words in
+				Valve(
+					id: words[1],
 					flowRate: words[5].toInt()!,
 					neighbors: Set(words
 						.suffix(from: 10)
@@ -44,19 +45,28 @@ struct Day16: Day {
 				)
 			}
 	}
+
+	private let totalTime: Int = 30
+	private let startingValveId: Valve.ID = "AA"
 	
 	func partOne() -> Int {
 		let valveArray = parseInput()
 		let valves = Dictionary(uniqueKeysWithValues: valveArray.map { ($0.id, $0) })
 		
-		let startingValve = valveArray.first(where: { $0.id == "AA" })!
-		let path = startingValve.path(in: valves, multiplier: 30)
+		let startingValve = valveArray.first(where: { $0.id == startingValveId })!
+		let path = startingValve.path(in: valves, multiplier: totalTime)
 
 		return path.totalPressure
 	}
 	
 	func partTwo() -> Int {
-		0
+		let valveArray = parseInput()
+		let valves = Dictionary(uniqueKeysWithValues: valveArray.map { ($0.id, $0) })
+
+		let startingValve = valveArray.first(where: { $0.id == startingValveId })!
+		let path = startingValve.doublePath(in: valves, multiplier: 26)
+
+		return path.totalPressure
 	}
 }
 
@@ -67,7 +77,7 @@ extension Valve {
 		let valves: [Valve]
 	}
 
-	func path(in valves: [ID: Valve], multiplier: Int, excluding opened: Set<Valve> = []) -> Path {
+	func doublePath(in valves: [ID: Valve], multiplier: Int, excluding opened: Set<Valve> = []) -> Path {
 		var pressure = flowRate * multiplier
 		var path = [self]
 		var opened = opened
@@ -88,6 +98,35 @@ extension Valve {
 				if multiplier == 30 {
 					print(path.valves.map(\.id))
 				}
+				return path
+			}
+			.sorted(by: \.totalPressure)
+
+		for bestPath in options.suffix(2) {
+			pressure += bestPath.totalPressure
+			path += bestPath.valves
+		}
+		return Path(totalPressure: pressure, valves: path)
+	}
+
+	func path(in valves: [ID: Valve], multiplier: Int, excluding opened: Set<Valve> = []) -> Path {
+		var pressure = flowRate * multiplier
+		var path = [self]
+		var opened = opened
+		if hasFlow {
+			opened.insert(self)
+		}
+		let options: [Path] = valves
+			.values
+			.filter(\.hasFlow)
+			.filter { !opened.contains($0)}
+			.compactMap { valve in
+				let steps = distance(to: valve, in: valves) + 1
+				let valveMultiplier = multiplier - steps
+				guard valveMultiplier > 0 else {
+					return nil
+				}
+				let path = valve.path(in: valves, multiplier: valveMultiplier, excluding: opened)
 				return path
 			}
 			.sorted(by: \.totalPressure)
