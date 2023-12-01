@@ -15,14 +15,13 @@ struct Day1: Day {
 //zoneight234
 //7pqrstsixteen
 //"""
-		var numbers = [String: Int]()
 		let numberFormatter = NumberFormatter()
 		numberFormatter.numberStyle = .spellOut
-		for int in 0...9 {
-			numbers["\(int)"] = int
-			numbers[numberFormatter.string(from: NSNumber(value: int))!] = int
+
+		numbers = (1...9).reduce(into: [:]) { numbers, int in
+			let formatted = numberFormatter.string(from: NSNumber(value: int))!
+			numbers[formatted] = int
 		}
-		self.numbers = numbers
 	}
 
 	func partOne() -> Int {
