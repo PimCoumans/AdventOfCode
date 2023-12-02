@@ -35,11 +35,16 @@ struct Day2: Day {
 			.linesByDroppingTrailingEmpty()
 			.compactMap(Game.init(string:))
 			.filter { $0.isPossibleWith(limits: limits) }
-			.reduce(0, { $0 + $1.index })
+			.map(\.index)
+			.sum()
 	}
 
 	func partTwo() -> Int {
-		0
+		input
+			.linesByDroppingTrailingEmpty()
+			.compactMap(Game.init(string:))
+			.map(\.power)
+			.sum()
 	}
 }
 
@@ -65,5 +70,9 @@ extension Day2.Game {
 
 	func isPossibleWith(limits: [Day2.Color: Int]) -> Bool {
 		counts.allSatisfy { limits[$0.key]! >= $0.value }
+	}
+
+	var power: Int {
+		counts.map(\.value).reduceFromFirstElement(*)
 	}
 }
