@@ -91,3 +91,20 @@ extension Map {
 		}
 	}
 }
+
+extension Map {
+	func tiles(surrounding point: Point) -> [Tile] {
+		[
+			Point(x: -1, y: -1),
+			Point(x: 0, y: -1),
+			Point(x: 1, y: -1),
+			Point(x: -1, y: 0),
+			Point(x: 1, y: 0),
+			Point(x: -1, y: 1),
+			Point(x: 0, y: 1),
+			Point(x: 1, y: 1)
+		]
+			.map { $0 + point }
+			.compactMap { storage[$0] }
+	}
+}
