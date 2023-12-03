@@ -5,11 +5,33 @@ struct Day3: Day {
 	struct PartNumber {
 		var value: Int = 0
 		var points: [Point] = []
+
+		mutating func addDigit(_ character: Character) {
+			guard let int = Int(String(character)) else { return }
+			value = (value * 10) + int
+		}
 	}
 
 	enum Value {
 		case number
-		case symbol
+		case gear
+		case otherSymbol
+
+		var isSymbol: Bool {
+			if case .number = self {
+				return false
+			}
+			return true
+		}
+
+		init?(character: Character) {
+			switch (character.isNumber, character) {
+			case (true, _): self = .number
+			case (_, "*"): self = .gear
+			case (_, "."): return nil
+			default: self = .otherSymbol
+			}
+		}
 	}
 
 	let map: Map<Value>
@@ -38,16 +60,14 @@ struct Day3: Day {
 				let point = Point(x: x, y: y)
 				if character.isNumber {
 					map[point] = .number
-					currentPartNumber.value = (currentPartNumber.value * 10) + Int(String(character))!
+					currentPartNumber.addDigit(character)
 					currentPartNumber.points.append(point)
 				} else {
 					if currentPartNumber.value > 0 {
 						partNumbers.append(currentPartNumber)
 						currentPartNumber = PartNumber()
 					}
-					if character != "." {
-						map[point] = .symbol
-					}
+					map[point] = Value(character: character)
 				}
 			}
 			if currentPartNumber.value > 0 {
@@ -57,13 +77,16 @@ struct Day3: Day {
 		self.map = map
 	}
 
+	func pointsSurrounding(_ partNumber: PartNumber) -> Set<Point> {
+		Set(
+			partNumber.points.flatMap { map.points(surrounding: $0)}
+		).subtracting(
+			Set(partNumber.points)
+		)
+	}
+
 	func partNumberHasSurroundingSymbols(_ partNumber: PartNumber) -> Bool {
-		for point in partNumber.points {
-			if map.tiles(surrounding: point).contains(.symbol) {
-				return true
-			}
-		}
-		return false
+		pointsSurrounding(partNumber).allSatisfy { map[$0]?.isSymbol != true }
 	}
 
 	func partOne() -> Int {
@@ -74,6 +97,26 @@ struct Day3: Day {
 	}
 
 	func partTwo() -> Int {
-		0
+		let gearPoints: [Point] = map
+			.filter { $0.tile == .gear }
+			.map(\.point)
+
+		var gearToParts: [Point: [PartNumber]] = [:]
+
+		for partNumber in partNumbers {
+			for point in pointsSurrounding(partNumber) {
+				if gearPoints.contains(point) {
+					gearToParts[point, default: []].append(partNumber)
+				}
+			}
+		}
+
+		return gearToParts
+			.filter { $0.value.count == 2 }
+			.map {
+				let (first, second) = $0.value.map(\.value).firstTwoValues
+				return first * second
+			}
+			.sum()
 	}
 }

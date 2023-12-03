@@ -93,7 +93,7 @@ extension Map {
 }
 
 extension Map {
-	func tiles(surrounding point: Point) -> [Tile] {
+	func points(surrounding point: Point) -> [Point] {
 		[
 			Point(x: -1, y: -1),
 			Point(x: 0, y: -1),
@@ -105,6 +105,12 @@ extension Map {
 			Point(x: 1, y: 1)
 		]
 			.map { $0 + point }
-			.compactMap { storage[$0] }
+			.filter(containsPoint)
+	}
+	func tiles(surrounding point: Point) -> [(point: Point, tile: Tile)] {
+		points(surrounding: point)
+			.compactMap { point in
+				storage[point].map { (point, $0) }
+			}
 	}
 }
