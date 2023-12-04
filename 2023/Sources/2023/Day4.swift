@@ -2,8 +2,9 @@ import Foundation
 
 struct Day4: Day {
 	struct Card {
-		let winning: Set<Int>
-		let drawn: Set<Int>
+		let winningCount: Int
+		let points: Int
+
 		init(string: String) {
 			let (winning, drawn) = string
 				.split(separator: "|")
@@ -12,23 +13,17 @@ struct Day4: Day {
 				}
 				.mappedToSets()
 				.firstTwoValues
-			self.winning = winning
-			self.drawn = drawn
-		}
 
-		var winningNumbers: Int {
-			drawn.intersection(winning).count
-		}
-
-		var points: Int {
-			let winning = winningNumbers
-			if winning <= 1 {
-				return winning
+			self.winningCount = winning.intersection(drawn).count
+			if winningCount <= 1 {
+				points = winningCount
+			} else {
+				let multiplier = winningCount - 1
+				points = Int(pow(Float(2), Float(multiplier)))
 			}
-			let multiplier = winning - 1
-			return Int(pow(Float(2), Float(multiplier)))
 		}
 	}
+
 	let cards: [Card]
 	let input: String
 	init(input: String) {
@@ -58,7 +53,24 @@ struct Day4: Day {
 			.sum()
 	}
 
+	func grabCards(after cardNumber: Int, count: Int) -> [Card] {
+		let range = cardNumber..<count
+		let availableRange = 0..<cards.count
+		let trimmedRange = range.clamped(to: availableRange)
+		return Array(cards[trimmedRange])
+	}
+
 	func partTwo() -> Int {
-		0
+		var cardArray = cards.map { [$0.winningCount] }
+		for index in 0..<cardArray.count {
+			for count in cardArray[index] {
+				guard count > 0 else { break }
+				let count = min(count, cardArray.count - index)
+				for countIndex in (index + 1)...(index + count) {
+					cardArray[countIndex].append(cards[countIndex].winningCount)
+				}
+			}
+		}
+		return cardArray.map(\.count).sum()
 	}
 }
