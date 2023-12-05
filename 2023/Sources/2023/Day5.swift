@@ -26,6 +26,9 @@ struct Day5: Day {
 		}
 	}
 
+	let seedInts: [Int]
+	let maps: [Map]
+
 	let input: String
 	init(input: String) {
 		self.input = input
@@ -64,20 +67,19 @@ struct Day5: Day {
 //60 56 37
 //56 93 4
 //"""
-	}
-
-	func partOne() -> Int {
-		let blocks = self.input.lineBlocksByDroppingTrailingEmpty()
-		var seeds = blocks.first!.first!
+		seedInts = self.input.lines().first!
 			.split(separator: ":").last!
 			.components(separatedBy: .whitespaces)
 			.compactMap(Int.init)
 
-		let maps = blocks
+		maps = self.input.lineBlocksByDroppingTrailingEmpty()
 			.dropFirst()
 			.map { $0.dropFirst() }
 			.map { Map(rangeStrings: Array($0)) }
+	}
 
+	func partOne() -> Int {
+		var seeds = seedInts
 		for map in maps {
 			seeds = seeds.map { map.map(int: $0) }
 		}
@@ -85,6 +87,20 @@ struct Day5: Day {
 	}
 
 	func partTwo() -> Int {
-		0
+		let seedRanges = seedInts
+			.chunks(ofCount: 2)
+			.map { $0.firstTwoValues }
+			.map { first, second in
+				first...(first + second)
+			}
+		var seeds: [Int] = seedRanges.flatMap { $0 }
+		let count = maps.count
+		var index = 1
+		for map in maps {
+			print("Mapping seeds with map \(index) of \(count)")
+			seeds = seeds.map { map.map(int: $0) }
+			index += 1
+		}
+		return seeds.min()!
 	}
 }
