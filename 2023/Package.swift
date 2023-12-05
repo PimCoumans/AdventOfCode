@@ -20,7 +20,7 @@ let package = Package(
 			resources: [
 				.process("Resources/Inputs")
 			],
-			swiftSettings: [.unsafeFlags(["-O"])]
+			swiftSettings: [/*.unsafeFlags(["-O"])*/]
 		),
 		.testTarget(name: "2023Tests", dependencies: ["2023"])
     ]
