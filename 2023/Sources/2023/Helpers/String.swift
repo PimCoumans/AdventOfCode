@@ -10,6 +10,10 @@ extension StringProtocol {
 		blocks().map { $0.lines() }
 	}
 
+	func lineBlocksByDroppingTrailingEmpty() -> [[String]] where Self == String {
+		blocks().map { $0.linesByDroppingTrailingEmpty() }
+	}
+
 	func blocks() -> [String] {
 		components(separatedBy: "\n\n")
 	}
