@@ -30,20 +30,10 @@ struct Day6: Day {
 	}
 
 	func ranges(for time: Int, toBeat score: Int) -> Int {
-		var result: (min: Int, max: Int) = (.max, 0)
-		for holdTime in 1..<time {
-			let distance = distance(for: time - holdTime, speed: holdTime)
-			guard distance > score else {
-				continue
-			}
-			if holdTime < result.min {
-				result.min = holdTime
-			}
-			if holdTime > result.max {
-				result.max = holdTime
-			}
-		}
-		return (result.max - result.min) + 1
+		let timeRange = 1..<time
+		let min = timeRange.first(where: { distance(for: time - $0, speed: $0) > score })!
+		let max = timeRange.last(where: { distance(for: time - $0, speed: $0) > score })!
+		return (max - min) + 1
 	}
 
 	func partOne() -> Int {
@@ -53,6 +43,7 @@ struct Day6: Day {
 
 		return zip(times, scores)
 			.map { ranges(for: $0, toBeat: $1) }
+			.filter { $0 > 0 }
 			.reduce(1, *)
 	}
 
