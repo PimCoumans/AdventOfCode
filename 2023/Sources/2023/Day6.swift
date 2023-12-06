@@ -2,8 +2,8 @@ import Foundation
 
 struct Day6: Day {
 
-	let times: [Int]
-	let scores: [Int]
+	let timeString: String
+	let scoreString: String
 
 	let input: String
 	init(input: String) {
@@ -18,13 +18,11 @@ struct Day6: Day {
 				$0
 					.components(separatedBy: ":")
 					.last!
-					.components(separatedBy: .whitespaces)
-					.compactMap(Int.init)
 			}
 			.firstTwoValues
 
-		self.times = times
-		self.scores = distances
+		self.timeString = times
+		self.scoreString = distances
 	}
 
 	func distance(for time: Int, speed: Int) -> Int {
@@ -49,12 +47,21 @@ struct Day6: Day {
 	}
 
 	func partOne() -> Int {
-		zip(times, scores)
+		let (times, scores) = [timeString, scoreString].map {
+			$0.components(separatedBy: .whitespaces).compactMap(Int.init)
+		}.firstTwoValues
+
+		return zip(times, scores)
 			.map { ranges(for: $0, toBeat: $1) }
 			.reduce(1, *)
 	}
 
 	func partTwo() -> Int {
-		0
+		let (time, score) =  [timeString, scoreString].map {
+			$0.components(separatedBy: .whitespaces).joined()
+		}
+		.map { Int($0)! }
+		.firstTwoValues
+		return ranges(for: time, toBeat: score)
 	}
 }
