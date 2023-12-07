@@ -62,14 +62,8 @@ struct Day7: Day {
 			}
 	}
 
-	func counts(for hand: String) -> [Character: Int] {
-		hand.reduce(into: [:]) {
-			$0[$1, default: 0] += 1
-		}
-	}
-
 	func type(for hand: String) -> HandType? {
-		let counts = counts(for: hand)
+		let counts: [Character: Int] = hand.reduce(into: [:]) { $0[$1, default: 0] += 1 }
 		let maxCount = counts.values.max()!
 		switch (counts.count, maxCount) {
 		case (1, _): return .five
