@@ -2,7 +2,32 @@ import Foundation
 
 struct Day7: Day {
 
-	static let cardMap: [Character: Character] = [
+	struct Hand: Comparable {
+		var cards: String
+		let bid: Int
+		var type: HandType?
+
+		static func < (left: Hand, right: Hand) -> Bool {
+			if left.type!.rawValue < right.type!.rawValue {
+				return true
+			} else if left.type!.rawValue > right.type!.rawValue {
+				return false
+			}
+			return left.cards < right.cards
+		}
+	}
+
+	enum HandType: Int {
+		case highCard
+		case pair
+		case twoPair
+		case three
+		case fullHouse
+		case four
+		case five
+	}
+
+	let cardMap: [Character: Character] = [
 		"2": "A",
 		"3": "B",
 		"4": "C",
@@ -18,22 +43,7 @@ struct Day7: Day {
 		"A": "M"
 	]
 
-	struct Hand {
-		let cards: String
-		let bid: Int
-		var type: HandType?
-	}
 	let hands: [Hand]
-
-	enum HandType: Int {
-		case highCard
-		case pair
-		case twoPair
-		case three
-		case fullHouse
-		case four
-		case five
-	}
 
 	let input: String
 	init(input: String) {
@@ -48,8 +58,7 @@ struct Day7: Day {
 		self.hands = self.input.linesByDroppingTrailingEmpty()
 			.map { $0.components(separatedBy: .whitespaces).firstTwoValues}
 			.map { hand, bid in
-				let cards = hand.map { Self.cardMap[$0]! }
-				return Hand(cards: String(cards), bid: Int(bid)!)
+				return Hand(cards: hand, bid: Int(bid)!)
 			}
 	}
 
@@ -67,29 +76,30 @@ struct Day7: Day {
 		case (2, 4): return .four
 		case (2, 3): return .fullHouse
 		case (3, 3): return .three
-		case (3, 2): return .twoPair // not sure here
+		case (3, 2): return .twoPair
 		case (4, 2): return .pair
 		case (5, _): return .highCard
 		default: return nil
 		}
 	}
 
+	func highestType(for hand: String) -> HandType? {
+		guard hand.contains("J") else {
+			return type(for: hand)
+		}
+		let types = cardMap.keys.compactMap {
+			return type(for: hand.replacingOccurrences(of: "J", with: String($0)))
+		}
+		return types.max(\.rawValue)
+	}
+
 	func partOne() -> Int {
 		let hands = self.hands.map {
 			var hand = $0
 			hand.type = type(for: hand.cards)
+			hand.cards = String(hand.cards.map { cardMap[$0]! })
 			return hand
-		}.sorted {
-			guard let leftType = $0.type, let rightType = $1.type else {
-				return false
-			}
-			if leftType.rawValue < rightType.rawValue {
-				return true
-			} else if leftType.rawValue > rightType.rawValue {
-				return false
-			}
-			return $0.cards < $1.cards
-		}
+		}.sorted()
 
 		return hands.enumerated().map { index, hand in
 			hand.bid * (index + 1)
@@ -97,6 +107,18 @@ struct Day7: Day {
 	}
 
 	func partTwo() -> Int {
-		0
+		var cardMap = cardMap
+		cardMap["J"] = "0"
+
+		let hands = self.hands.map {
+			var hand = $0
+			hand.type = highestType(for: hand.cards)
+			hand.cards = String(hand.cards.map { cardMap[$0]! })
+			return hand
+		}.sorted()
+
+		return hands.enumerated().map { index, hand in
+			hand.bid * (index + 1)
+		}.sum()
 	}
 }
