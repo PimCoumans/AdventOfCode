@@ -1,6 +1,6 @@
 import Foundation
 
-struct Day0: Day {
+struct Day12: Day {
 	let input: String
 	init(input: String) {
 //		self.input = input
