@@ -19,6 +19,9 @@ extension Collection where Element: BinaryInteger {
 	func sum() -> Element {
 		reduce(0, +)
 	}
+	func product() -> Element {
+		reduce(1, *)
+	}
 }
 
 extension Collection {

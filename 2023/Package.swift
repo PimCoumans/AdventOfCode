@@ -9,13 +9,15 @@ let package = Package(
 		.executable(name: "2023", targets: ["2023"])
     ],
     dependencies: [
-		.package(url: "https://github.com/apple/swift-algorithms", from: "1.0.0")
+		.package(url: "https://github.com/apple/swift-algorithms", from: "1.0.0"),
+		.package(url: "https://github.com/apple/swift-collections.git", from: "1.0.5")
     ],
     targets: [
 		.executableTarget(
 			name: "2023",
 			dependencies: [
-				.product(name: "Algorithms", package: "swift-algorithms")
+				.product(name: "Algorithms", package: "swift-algorithms"),
+				.product(name: "Collections", package: "swift-collections")
 			],
 			resources: [
 				.process("Resources/Inputs")
