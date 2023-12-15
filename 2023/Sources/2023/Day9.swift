@@ -8,7 +8,7 @@ struct Day9: Day {
 	init(input: String) {
 		self.input = input
 //		self.input = """
-//-3 0 3 6 9 12 15
+//0 3 6 9 12 15
 //1 3 6 10 15 21
 //10 13 16 21 30 45
 //"""
@@ -20,9 +20,13 @@ struct Day9: Day {
 			}
 	}
 
-	func predictedValue(for history: [Int], debug: Bool = false) -> Int {
+	func predictedValue(
+		for history: [Int],
+		reducer: (Int, [Int]) -> Int = { $1.last! + $0 },
+		debug: Bool = false
+	) -> Int {
 		var differences: [[Int]] = [history]
-		while differences.last!.sum() != 0 {
+		while !differences.last!.allSatisfy({ $0 == 0 }) {
 			differences.append(
 				Array(
 					differences
@@ -39,16 +43,23 @@ struct Day9: Day {
 			}
 		}
 		return differences
-			.map { $0.last! }
-			.sum()
+			.reversed()
+			.reduce(0, reducer)
 	}
 
-	func partOne() -> Int {return values.map {
-			predictedValue(for: $0)
+	func partOne() -> Int {
+		return values.map {
+			predictedValue(for: $0, debug: false)
 		}.sum()
 	}
 
 	func partTwo() -> Int {
-		0
+		return values.map {
+			predictedValue(
+				for: $0,
+				reducer: { $1.first! - $0 },
+				debug: false
+			)
+		}.sum()
 	}
 }
