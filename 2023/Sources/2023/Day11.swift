@@ -2,8 +2,7 @@ import Foundation
 
 struct Day11: Day {
 
-	let map: Map<Int>
-	let expandedMap: Map<Int>
+	let galaxies: [(point: Point, offset: Point)]
 
 	let input: String
 	init(input: String) {
@@ -23,10 +22,10 @@ struct Day11: Day {
 		let rows = self.input.linesByDroppingTrailingEmpty()
 
 		var verticalOffset: Int = 0
+		let columnCount = rows.first!.count
 		var populatedColumns: Set<Int> = []
-		var map = Map<Int>(width: rows.first!.count, height: rows.count * 2)
-		var index: Int = 0
 
+		var galaxies: [(point: Point, offset: Point)] = []
 		for (y, row) in rows.enumerated() {
 			if row.allSatisfy({ $0 == "." }) {
 				verticalOffset += 1
@@ -35,30 +34,18 @@ struct Day11: Day {
 			let columns = row.enumerated().filter { $0.element != "." }.map(\.offset)
 			populatedColumns.formUnion(columns)
 			for x in columns {
-				let point = Point(x: x, y: y + verticalOffset)
-				map[point] = index
-				index += 1
+				galaxies.append((Point(x: x, y: y), Point(x: 0, y: verticalOffset)))
 			}
 		}
-		self.map = map
 
-		let unpopulatedColumns = Set(0..<map.width).subtracting(populatedColumns)
-		let width = map.width + unpopulatedColumns.count
-
-		var expandedMap = Map<Int>(width: width, height: rows.count + verticalOffset)
-		for (point, index) in map {
+		let unpopulatedColumns = Set(0..<columnCount).subtracting(populatedColumns)
+		self.galaxies = galaxies.map { point, offset in
 			let horizontalOffset = unpopulatedColumns.filter { $0 <= point.x }.count
-			let newPoint = Point(x: point.x + horizontalOffset, y: point.y)
-			expandedMap[newPoint] = index
+			return (point, offset + Point(x: horizontalOffset, y: 0))
 		}
-		self.expandedMap = expandedMap
 	}
 
-	func partOne() -> Int {
-		let galaxies: [(Point, Int)] = expandedMap.compactMap { point, index in
-			index.map { (point, $0) }
-		}
-
+	private func sumOfDistancesBetween(galaxies: [(point: Point, index: Int)]) -> Int {
 		var paired: Set<Int> = []
 		var lengths: [Int] = []
 		for (pointA, galaxyA) in galaxies {
@@ -71,7 +58,21 @@ struct Day11: Day {
 		return lengths.sum()
 	}
 
+	func partOne() -> Int {
+		let galaxies: [(point: Point, index: Int)] = galaxies.enumerated().map { index, element in
+			let (point, offset) = element
+			return (point + offset, index)
+		}
+		return sumOfDistancesBetween(galaxies: galaxies)
+	}
+
 	func partTwo() -> Int {
-		0
+		let multiplier = 1_000_000
+		let galaxies: [(point: Point, index: Int)] = galaxies.enumerated().map { index, element in
+			let (point, offset) = element
+			let multipliedOffset = offset * (multiplier - 1)
+			return (point + multipliedOffset, index)
+		}
+		return sumOfDistancesBetween(galaxies: galaxies)
 	}
 }
