@@ -12,6 +12,12 @@ struct Map<Tile: Equatable> {
 		self.storage = [:]
 	}
 
+	init<Other>(sizeFrom map: Map<Other>) {
+		width = map.width
+		height = map.height
+		self.storage = [:]
+	}
+
 	func containsPoint(_ point: Point) -> Bool {
 		(0..<width).contains(point.x) &&
 		(0..<height).contains(point.y)
@@ -89,6 +95,23 @@ extension Map {
 		enumeratePoints(offset: offset) { point in
 			enumerator(point, storage[point])
 		}
+	}
+}
+
+extension Map {
+	func floodFill(from startPoint: Point, while predicate: (Point) -> Bool) {
+		guard predicate(startPoint) else {
+			return
+		}
+		var visited: Set<Point> = [startPoint]
+		var visiting: Set<Point> = [startPoint]
+		repeat {
+			visiting = Set(visiting.flatMap { points(surrounding: $0) })
+				.subtracting(visited)
+			visited.formUnion(visiting)
+
+			visiting = visiting.filter(predicate)
+		} while !visiting.isEmpty
 	}
 }
 
