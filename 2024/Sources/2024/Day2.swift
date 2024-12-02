@@ -33,11 +33,25 @@ struct Day2: Day {
 			}
 	}
 
+	func isSafeReportBySkippingOneLevel(_ report: [Int]) -> Bool {
+		guard !isSafeReport(report) else {
+			return true
+		}
+		for index in report.indices {
+			var trimmedReport = report
+			trimmedReport.remove(at: index)
+			if isSafeReport(trimmedReport) {
+				return true
+			}
+		}
+		return false
+	}
+
 	func partOne() -> Int {
 		reports.count(where: isSafeReport(_:))
 	}
 
 	func partTwo() -> Int {
-		0
+		reports.count(where: isSafeReportBySkippingOneLevel(_:))
 	}
 }
