@@ -12,26 +12,32 @@ struct Day1: Day {
 //3   9
 //3   3
 //"""
-	}
-
-	func partOne() -> Int {
-		var lists: [[Int]] = [[], []]
+		var leftList: [Int] = []
+		var rightList: [Int] = []
 		for line in input.linesByDroppingTrailingEmpty() {
 			let parts = line
 				.components(separatedBy: .whitespaces)
 				.filter(\.isNotEmpty)
 				.firstTwoValues
-			lists[0].append(Int(parts.first)!)
-			lists[1].append(Int(parts.second)!)
+			leftList.append(Int(parts.first)!)
+			rightList.append(Int(parts.second)!)
 		}
-		lists = lists.map { $0.sorted() }
-		let distance = zip(lists[0], lists[1]).reduce(0) { partialResult, values in
-			partialResult + abs(values.0 - values.1)
+		self.leftList = leftList.sorted()
+		self.rightList = rightList.sorted()
+	}
+
+	let leftList: [Int]
+	let rightList: [Int]
+
+	func partOne() -> Int {
+		zip(leftList, rightList).reduce(0) { distance, values in
+			distance + abs(values.0 - values.1)
 		}
-		return distance
 	}
 
 	func partTwo() -> Int {
-		0
+		leftList.reduce(0) { score, value in
+			score + value * rightList.count(where: { $0 == value })
+		}
 	}
 }
