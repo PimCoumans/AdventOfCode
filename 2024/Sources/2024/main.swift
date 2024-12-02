@@ -1,7 +1,7 @@
 import Foundation
 
 var days: [any Day] = [
-//	Day1(),
+	Day1(),
 //	Day2(),
 //	Day3(),
 //	Day4(),
@@ -11,7 +11,7 @@ var days: [any Day] = [
 //	Day8(),
 //	Day9(),
 //	Day10(),
-	Day11(),
+//	Day11(),
 //	Day12(),
 //	Day13()
 //	Day14(),
